@@ -74,7 +74,7 @@ void SetStatus(const std::wstring& value) {
     if (g_status) SetWindowTextW(g_status, value.c_str());
 }
 
-void AddPrint(lua_State* state) {
+int AddPrint(lua_State* state) {
     auto* output = static_cast<std::wstring*>(lua_touserdata(state, lua_upvalueindex(1)));
     const int count = lua_gettop(state);
     std::wstring line;
@@ -87,6 +87,7 @@ void AddPrint(lua_State* state) {
     }
     line += L"\r\n";
     if (output) *output += line;
+    return 0; // print returns no Luau values
 }
 
 struct RunResult {
