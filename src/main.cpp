@@ -289,7 +289,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
         g_panel = CreateSolidBrush(PANEL);
         g_editorBrush = CreateSolidBrush(RGB(17, 20, 26));
 
-        MakeButton(hwnd, ID_RUN, L"▶  RUN", 22, 100);
+        g_run = MakeButton(hwnd, ID_RUN, L"▶  RUN", 22, 100);
         MakeButton(hwnd, ID_OPEN, L"Open", 132, 76);
         MakeButton(hwnd, ID_SAVE, L"Save", 218, 76);
         MakeButton(hwnd, ID_CLEAR, L"Clear output", 304, 112);
