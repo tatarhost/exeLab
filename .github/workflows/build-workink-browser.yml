@@ -1,0 +1,43 @@
+name: Build WorkInk Browser (Windows)
+
+on:
+  push:
+    branches: [ workink-browser ]
+    paths:
+      - "WorkInkBrowser/**"
+      - ".github/workflows/build-workink-browser.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: WorkInkBrowser
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: WorkInkBrowser/package.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build portable EXE
+        run: npm run dist:win
+
+      - name: Upload portable browser
+        uses: actions/upload-artifact@v4
+        with:
+          name: WorkInk-Browser-Windows-x64
+          path: WorkInkBrowser/dist/*.exe
+          if-no-files-found: error
+          retention-days: 14
