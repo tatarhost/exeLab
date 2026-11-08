@@ -1,0 +1,25 @@
+{
+  "name": "workink-browser",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A minimal Chromium browser window with no built-in ad blocking.",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "45.2.3",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "fun.cheatlab.workinkbrowser",
+    "productName": "WorkInk Browser",
+    "directories": { "output": "dist" },
+    "files": ["main.cjs", "preload.cjs", "renderer/**/*", "package.json"],
+    "win": {
+      "target": [{ "target": "portable", "arch": ["x64"] }]
+    },
+    "artifactName": "WorkInk-Browser-${version}-portable.${ext}"
+  }
+}
