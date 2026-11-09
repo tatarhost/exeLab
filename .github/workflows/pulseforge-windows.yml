@@ -31,7 +31,7 @@ jobs:
           tar -xzf PulseForge-build-source.tar.gz
 
       - name: Restore and publish single-file app
-        run: dotnet publish PulseForge/PulseForge/PulseForge.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o publish
+        run: dotnet publish PulseForge/PulseForge.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o publish
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
