@@ -5,6 +5,8 @@ on:
     branches: ["pulseforge-lite"]
     paths:
       - "PulseForge-build-source.part10"
+      - "PulseForge/GlobalUsings.cs"
+      - ".github/workflows/pulseforge-windows.yml"
   workflow_dispatch:
 
 permissions:
