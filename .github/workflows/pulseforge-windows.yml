@@ -1,11 +1,10 @@
-name: Build PulseForge for Windows
+name: Build PulseForge Lite for Windows
 
 on:
   push:
-    branches: ["pulseforge"]
+    branches: ["pulseforge-lite"]
     paths:
-      - "PulseForge-build-source.tar.gz.b64"
-      - ".github/workflows/pulseforge-windows.yml"
+      - "PulseForge-build-source.part09"
   workflow_dispatch:
 
 permissions:
@@ -23,10 +22,12 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Unpack source bundle
+      - name: Reassemble and unpack source bundle
         shell: pwsh
         run: |
-          $encoded = (Get-Content -Raw .\PulseForge-build-source.tar.gz.b64).Trim()
+          $parts = @(Get-ChildItem -LiteralPath . -Filter "PulseForge-build-source.part*" | Sort-Object Name)
+          if ($parts.Count -ne 9) { throw "Expected 9 source bundle parts, found $($parts.Count)." }
+          $encoded = (($parts | ForEach-Object { (Get-Content -Raw $_.FullName).Trim() }) -join "")
           [IO.File]::WriteAllBytes("PulseForge-build-source.tar.gz", [Convert]::FromBase64String($encoded))
           tar -xzf PulseForge-build-source.tar.gz
 
@@ -36,7 +37,7 @@ jobs:
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
         with:
-          name: PulseForge-Windows-x64
+          name: PulseForge-Lite-Windows-x64
           path: publish/PulseForge.exe
           if-no-files-found: error
           retention-days: 14
