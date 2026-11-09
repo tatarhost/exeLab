@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-windows:
@@ -36,10 +36,58 @@ jobs:
       - name: Restore and publish single-file app
         run: dotnet publish PulseForge/PulseForge.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o publish
 
-      - name: Upload Windows executable
+      - name: Package Windows downloads
+        shell: pwsh
+        run: |
+          @"
+          PulseForge Lite 0.1.0
+          Windows x64, self-contained build.
+          Extract the ZIP and run PulseForge.exe.
+          "@ | Set-Content -Encoding utf8 publish/README.txt
+          Compress-Archive -Path publish/PulseForge.exe,publish/README.txt -DestinationPath publish/PulseForge-Lite-Windows-x64.zip -CompressionLevel Optimal
+
+      - name: Upload Windows build artifact
         uses: actions/upload-artifact@v4
         with:
           name: PulseForge-Lite-Windows-x64
-          path: publish/PulseForge.exe
+          path: |
+            publish/PulseForge.exe
+            publish/PulseForge-Lite-Windows-x64.zip
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish GitHub Release v0.1.0
+        if: github.event_name == 'push' && github.event.head_commit.message == 'Release PulseForge Lite v0.1.0'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.0
+          target_commitish: pulseforge-lite
+          name: PulseForge Lite v0.1.0
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: true
+          body: |
+            # PulseForge Lite 0.1.0
+
+            First public Windows x64 release of the lightweight DAW.
+
+            ## Included
+            - Multitrack arrangement and editable pattern clips
+            - Piano roll and note editing
+            - Built-in sine, triangle, saw, and square synth voices
+            - Audio sample import
+            - Track mixer with volume, pan, and mute
+            - Master delay
+            - MIDI import and export
+            - Project save/load (.pfsong)
+            - Offline 44.1 kHz stereo WAV rendering
+
+            ## Install
+            Download either the standalone `PulseForge.exe` or the ZIP archive, extract it, and run the EXE.
+
+            This is an original lightweight DAW. It is not affiliated with or a redistribution of FL Studio.
+          files: |
+            publish/PulseForge.exe
+            publish/PulseForge-Lite-Windows-x64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
