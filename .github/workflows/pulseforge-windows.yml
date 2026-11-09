@@ -4,7 +4,7 @@ on:
   push:
     branches: ["pulseforge-lite"]
     paths:
-      - "PulseForge-build-source.part09"
+      - "PulseForge-build-source.part10"
   workflow_dispatch:
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
         shell: pwsh
         run: |
           $parts = @(Get-ChildItem -LiteralPath . -Filter "PulseForge-build-source.part*" | Sort-Object Name)
-          if ($parts.Count -ne 9) { throw "Expected 9 source bundle parts, found $($parts.Count)." }
+          if ($parts.Count -ne 10) { throw "Expected 10 source bundle parts, found $($parts.Count)." }
           $encoded = (($parts | ForEach-Object { (Get-Content -Raw $_.FullName).Trim() }) -join "")
           [IO.File]::WriteAllBytes("PulseForge-build-source.tar.gz", [Convert]::FromBase64String($encoded))
           tar -xzf PulseForge-build-source.tar.gz
