@@ -1,0 +1,42 @@
+name: Build Tap Tap Dash PC Launcher
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "tap-tap-dash-launcher/**"
+      - ".github/workflows/build-tap-tap-dash-pc.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Build launcher
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          New-Item -ItemType Directory -Path out -Force | Out-Null
+          cl.exe /nologo /std:c++17 /O2 /EHsc /DUNICODE /D_UNICODE /DWIN32_LEAN_AND_MEAN /DNOMINMAX "tap-tap-dash-launcher\main.cpp" /link /SUBSYSTEM:WINDOWS /OUT:"out\TapTapDashPC.exe" shell32.lib user32.lib gdi32.lib
+          if (-not (Test-Path "out\TapTapDashPC.exe")) {
+            throw "TapTapDashPC.exe was not produced"
+          }
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: TapTapDashPC-Windows-x64
+          path: out/TapTapDashPC.exe
+          if-no-files-found: error
+          retention-days: 14
