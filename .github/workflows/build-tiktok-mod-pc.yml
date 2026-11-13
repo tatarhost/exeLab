@@ -1,0 +1,40 @@
+name: Build TikTok Mod PC
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tiktok-mod-pc/**"
+      - ".github/workflows/build-tiktok-mod-pc.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish self-contained Windows x64 EXE
+        shell: pwsh
+        run: dotnet publish .\tiktok-mod-pc\TikTokModPC.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o .\publish
+
+      - name: Package
+        shell: pwsh
+        run: Compress-Archive -Path .\publish\TikTokModPC.exe -DestinationPath .\TikTokModPC-Windows-x64.zip -Force
+
+      - name: Upload Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: TikTokModPC-Windows-x64
+          path: TikTokModPC-Windows-x64.zip
+          if-no-files-found: error
+          retention-days: 14
