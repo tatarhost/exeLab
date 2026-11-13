@@ -130,7 +130,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lpa
                   item->rcItem.right - 1, item->rcItem.bottom - 1, 12, 12);
 
         wchar_t text[128]{};
-        GetWindowTextW(item->hwndItem, text, static_cast<int>(std::size(text)));
+        GetWindowTextW(item->hwndItem, text, 128);
         SetBkMode(item->hDC, TRANSPARENT);
         SetTextColor(item->hDC, RGB(255, 255, 255));
         SelectObject(item->hDC, g_body_font);
